@@ -1,0 +1,35 @@
+FROM php:8.2-cli
+
+# Install system dependencies
+RUN apt-get update && apt-get install -y \
+    git \
+    curl \
+    zip \
+    unzip \
+    sqlite3 \
+    libsqlite3-dev
+
+# Install Composer
+COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
+
+# Set working directory
+WORKDIR /app
+
+# Copy application files
+COPY . .
+
+# Install dependencies
+RUN composer install --no-dev --optimize-autoloader
+
+# Create SQLite database
+RUN touch /app/database/database.sqlite
+
+# Run migrations and seed
+RUN php artisan migrate:fresh --seed --force
+RUN php artisan l5-swagger:generate
+
+# Expose port
+EXPOSE 8080
+
+# Start server
+CMD php artisan serve --host=0.0.0.0 --port=${PORT:-8080}
