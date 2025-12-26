@@ -26,10 +26,9 @@ RUN touch /app/database/database.sqlite
 
 # Run migrations and seed
 RUN php artisan migrate:fresh --seed --force
-RUN php artisan l5-swagger:generate
 
 # Expose port
 EXPOSE 8080
 
-# Start server
-CMD php artisan serve --host=0.0.0.0 --port=${PORT:-8080}
+# Start server - generate swagger docs at runtime when env vars are available
+CMD php artisan l5-swagger:generate && php artisan serve --host=0.0.0.0 --port=${PORT:-8080}
