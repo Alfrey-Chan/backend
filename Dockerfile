@@ -19,7 +19,7 @@ WORKDIR /app
 COPY . .
 
 # Install dependencies
-RUN composer install --no-dev --optimize-autoloader
+RUN composer install --optimize-autoloader
 
 # Create SQLite database
 RUN touch /app/database/database.sqlite
